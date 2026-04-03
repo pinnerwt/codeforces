@@ -78,6 +78,18 @@ def save_problem(data):
         shutil.copy2(test_sh_src, test_sh_dst)
         print(f"  Copied test.sh -> {contest_id}/{letter.lower()}/test.sh")
 
+    # Append to order.txt in the contest dir (tracks problem order)
+    contest_dir = os.path.join(BASE_DIR, contest_id)
+    order_path = os.path.join(contest_dir, 'order.txt')
+    existing = []
+    if os.path.isfile(order_path):
+        with open(order_path) as f:
+            existing = [l.strip() for l in f if l.strip()]
+    if letter.lower() not in existing:
+        existing.append(letter.lower())
+        with open(order_path, 'w') as f:
+            f.write('\n'.join(existing) + '\n')
+
     print(f"  Saved {len(tests)} test(s) to {contest_id}/{letter.lower()}/")
     return contest_id, letter
 
