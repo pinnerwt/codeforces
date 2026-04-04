@@ -65,7 +65,16 @@ if [ ! -f "$SRC" ]; then
 fi
 
 echo "Compiling $SRC ..."
-g++ -std=c++17 -O2 -o "$BIN" "$SRC"
+g++ -std=c++17 -O2 -I"$HOME/codeforces/include" -o "$BIN" "$SRC"
+
+# Use timeout/gtimeout if available, otherwise run without timeout
+if command -v timeout &>/dev/null; then
+    TIMEOUT="timeout 5"
+elif command -v gtimeout &>/dev/null; then
+    TIMEOUT="gtimeout 5"
+else
+    TIMEOUT=""
+fi
 
 passed=0
 failed=0
@@ -85,7 +94,7 @@ for inf in in*.txt; do
     total=$((total + 1))
     outf="out${num}.txt"
 
-    if ! timeout 5 "$BIN" < "$inf" > "$outf" 2>&1; then
+    if ! $TIMEOUT "$BIN" < "$inf" > "$outf" 2>&1; then
         echo "Test $num: RUNTIME ERROR"
         failed=$((failed + 1))
         continue
