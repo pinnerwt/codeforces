@@ -96,8 +96,15 @@ for inf in in*.txt; do
         passed=$((passed + 1))
     else
         echo "Test $num: FAILED"
-        diff --strip-trailing-cr "$outf" "$ansf" | head -20
-        echo "---"
+        echo "  Expected        | Got"
+        echo "  ----------------+----------------"
+        paste "$ansf" "$outf" | while IFS=$'\t' read -r exp got; do
+            if [ "$exp" = "$got" ]; then
+                printf "  %-16s| %s\n" "$exp" "$got"
+            else
+                printf "  %-16s| %s  <--\n" "$exp" "$got"
+            fi
+        done
         failed=$((failed + 1))
     fi
 done
